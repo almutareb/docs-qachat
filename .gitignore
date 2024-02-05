@@ -167,3 +167,6 @@ chroma_db/*
 bin
 obj
 .langchain.sqlite
+*.zip
+*.faiss
+*.pkl

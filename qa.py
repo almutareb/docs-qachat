@@ -18,16 +18,17 @@ from langchain.llms import HuggingFaceHub
 from langchain.embeddings import HuggingFaceHubEmbeddings
 # vectorestore
 from langchain.vectorstores import Chroma
+from langchain.vectorstores import FAISS
+import zipfile
 
 # retrieval chain
 from langchain.chains import RetrievalQAWithSourcesChain
 # prompt template
 from langchain.prompts import PromptTemplate
 from langchain.memory import ConversationBufferMemory
-from langchain.retrievers import BM25Retriever, EnsembleRetriever
-# reorder retrived documents
+
 # github issues
-from langchain.document_loaders import GitHubIssuesLoader
+#from langchain.document_loaders import GitHubIssuesLoader
 # debugging
 from langchain.globals import set_verbose
 # caching
@@ -78,7 +79,7 @@ llm = HuggingFaceHub(repo_id=llm_model_name, model_kwargs={
     })
 
 # initialize Embedding config
-embedding_model_name = "sentence-transformers/all-mpnet-base-v2"
+embedding_model_name = "sentence-transformers/multi-qa-mpnet-base-dot-v1"
 embeddings = HuggingFaceHubEmbeddings(repo_id=embedding_model_name)
 
 set_llm_cache(SQLiteCache(database_path=".langchain.sqlite"))
@@ -86,16 +87,19 @@ set_llm_cache(SQLiteCache(database_path=".langchain.sqlite"))
 # retrieve vectorsrore
 s3 = boto3.client('s3', config=Config(signature_version=UNSIGNED))
 
-## Chroma DB
+## download vectorstore from S3
 s3.download_file(AWS_S3_LOCATION, AWS_S3_FILE, VS_DESTINATION)
+with zipfile.ZipFile(VS_DESTINATION, 'r') as zip_ref:
+    zip_ref.extractall('./vectorstore/')
+
+FAISS_INDEX_PATH='./vectorstore/lc-faiss-multi-qa-mpnet'
+db = FAISS.load_local(FAISS_INDEX_PATH, embeddings)
+
 # use the cached embeddings instead of embeddings to speed up re-retrival
-db = Chroma(persist_directory="./vectorstore", embedding_function=embeddings)
-db.get()
+# db = Chroma(persist_directory="./vectorstore", embedding_function=embeddings)
+# db.get()
 
-retriever = db.as_retriever(search_type="mmr")#, search_kwargs={'k': 3, 'lambda_mult': 0.25})
-
-# asks LLM to create 3 alternatives baed on user query
-# asks LLM to extract relevant parts from retrieved documents
+retriever = db.as_retriever(search_type="mmr", search_kwargs={'k': 3, 'lambda_mult': 0.25})
 
 prompt = PromptTemplate(
     input_variables=["history", "context", "question"],
