@@ -1,7 +1,7 @@
 huggingface_hub
 chromadb
 faiss-cpu
-langchain
+langchain < 0.2.0
 langchain-community
 python-dotenv
 bs4
