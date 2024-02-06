@@ -16,7 +16,7 @@ from botocore.client import Config
 # HF libraries
 from langchain_community.llms import HuggingFaceHub
 from langchain_community.embeddings import HuggingFaceHubEmbeddings
-# vectorstore
+# vectorestore
 from langchain_community.vectorstores import Chroma
 from langchain_community.vectorstores import FAISS
 import zipfile
