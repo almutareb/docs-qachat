@@ -12,4 +12,4 @@ FROM mcr.microsoft.com/devcontainers/python:1-${VARIANT}
 #COPY library-scripts/github-debian.sh /tmp/library-scripts/
 RUN apt-get update && apt-get update
 RUN pip install --upgrade pip
-RUN pip install -r requirements.txt
+#RUN pip install -r requirements.txt
