@@ -14,11 +14,11 @@ from botocore import UNSIGNED
 from botocore.client import Config
 
 # HF libraries
-from langchain.llms import HuggingFaceHub
-from langchain.embeddings import HuggingFaceHubEmbeddings
+from langchain_community.llms import HuggingFaceHub
+from langchain_community.embeddings import HuggingFaceHubEmbeddings
 # vectorestore
-from langchain.vectorstores import Chroma
-from langchain.vectorstores import FAISS
+from langchain_community.vectorstores import Chroma
+from langchain_community.vectorstores import FAISS
 import zipfile
 
 # retrieval chain
