@@ -75,7 +75,7 @@ llm = HuggingFaceHub(repo_id=llm_model_name, model_kwargs={
     "max_new_tokens":1024, 
     "repetition_penalty":1.2, 
 #    "streaming": True, 
-#    "return_full_text":True
+    "return_full_text":False
     })
 
 # initialize Embedding config
