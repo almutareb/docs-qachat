@@ -6,7 +6,7 @@ import logging
 import os
 from dotenv import load_dotenv
 
-import time
+#import time
 
 #boto3 for S3 access
 import boto3
@@ -14,10 +14,10 @@ from botocore import UNSIGNED
 from botocore.client import Config
 
 # HF libraries
-from langchain_community.llms import HuggingFaceHub
-from langchain_community.embeddings import HuggingFaceHubEmbeddings
+from langchain_huggingface import HuggingFaceEndpoint
+from langchain_huggingface.embeddings import HuggingFaceEmbeddings
 # vectorestore
-from langchain_community.vectorstores import Chroma
+#from langchain_community.vectorstores import Chroma
 from langchain_community.vectorstores import FAISS
 import zipfile
 
@@ -34,7 +34,7 @@ from langchain.globals import set_verbose
 # caching
 from langchain.globals import set_llm_cache
 # We can do the same thing with a SQLite cache
-from langchain.cache import SQLiteCache
+from langchain_community.cache import SQLiteCache
 
 
 # template for prompt
@@ -70,17 +70,17 @@ if os.path.exists('.langchain.sqlite'):
 llm_model_name = "mistralai/Mistral-7B-Instruct-v0.1"
 
 # changed named to model_id to llm as is common
-llm = HuggingFaceHub(repo_id=llm_model_name, model_kwargs={
-    # "temperature":0.1, 
-    "max_new_tokens":1024, 
-    "repetition_penalty":1.2, 
-#    "streaming": True, 
-    "return_full_text":False
-    })
+llm = HuggingFaceEndpoint(
+repo_id=llm_model_name, 
+temperature=0.1, 
+max_new_tokens=1024,
+repetition_penalty=1.2,
+return_full_text=False,
+) 
 
 # initialize Embedding config
 embedding_model_name = "sentence-transformers/multi-qa-mpnet-base-dot-v1"
-embeddings = HuggingFaceHubEmbeddings(repo_id=embedding_model_name)
+embeddings = HuggingFaceEmbeddings(model_name=embedding_model_name)
 
 set_llm_cache(SQLiteCache(database_path=".langchain.sqlite"))
 
@@ -93,7 +93,7 @@ with zipfile.ZipFile(VS_DESTINATION, 'r') as zip_ref:
     zip_ref.extractall('./vectorstore/')
 
 FAISS_INDEX_PATH='./vectorstore/lc-faiss-multi-qa-mpnet'
-db = FAISS.load_local(FAISS_INDEX_PATH, embeddings)
+db = FAISS.load_local(FAISS_INDEX_PATH, embeddings, allow_dangerous_deserialization=True)
 
 # use the cached embeddings instead of embeddings to speed up re-retrival
 # db = Chroma(persist_directory="./vectorstore", embedding_function=embeddings)

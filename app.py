@@ -36,6 +36,12 @@ def create_gradio_interface(qa:RetrievalQAWithSourcesChain):
         result = qa({"query": query, "history": history, "question": question})
         return result
 
+    def vote(data: gr.LikeData):
+        if data.liked:
+            print("You upvoted this response: ")
+        else:
+            print("You downvoted this response: ")
+
     css="""
     #col-container {max-width: 700px; margin-left: auto; margin-right: auto;}
     """
@@ -43,19 +49,28 @@ def create_gradio_interface(qa:RetrievalQAWithSourcesChain):
     title = """
     <div style="text-align: center;max-width: 1920px;">
         <h1>Chat with your Documentation</h1>
-        <p style="text-align: center;">This is a privately hosten Docs AI Buddy, <br />
-        It will help you with any question regarding the documentation of Ray ;)</p>
+        <p style="text-align: center;">This is a privately hosten Docs AI Buddy ;)</p>
     </div>
     """
 
+    head_style = """
+    <style>
+    @media (min-width: 1536px)
+    {
+        .gradio-container {
+            min-width: var(--size-full) !important;
+        }
+    }
+    </style>
+    """
 
-
-    with gr.Blocks(css=css) as demo:
+    with gr.Blocks(title="DocsBuddy AI 🤵🏻‍♂️", head=head_style) as demo:
         with gr.Column(min_width=900, elem_id="col-container"):
             gr.HTML(title)      
-            chatbot = gr.Chatbot([], elem_id="chatbot")
+            chatbot = gr.Chatbot([], elem_id="chatbot", label="DocuBuddy 🤵🏻‍♂️")
             #with gr.Row():
             #    clear = gr.Button("Clear")
+            chatbot.like(vote, None, None)
 
             with gr.Row():
                 question = gr.Textbox(label="Question", placeholder="Type your question and hit Enter ")

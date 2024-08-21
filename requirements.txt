@@ -3,6 +3,7 @@ chromadb
 faiss-cpu
 langchain
 langchain-community
+langchain-huggingface
 python-dotenv
 bs4
 gradio
