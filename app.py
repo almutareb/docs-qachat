@@ -49,7 +49,7 @@ def create_gradio_interface(qa:RetrievalQAWithSourcesChain):
     title = """
     <div style="text-align: center;max-width: 1920px;">
         <h1>Chat with your Documentation</h1>
-        <p style="text-align: center;">This is a privately hosten Docs AI Buddy ;)</p>
+        <p style="text-align: center;">This is a privately hosted Docs AI Buddy ;)</p>
     </div>
     """
 
@@ -67,13 +67,13 @@ def create_gradio_interface(qa:RetrievalQAWithSourcesChain):
     with gr.Blocks(title="DocsBuddy AI 🤵🏻‍♂️", head=head_style) as demo:
         with gr.Column(min_width=900, elem_id="col-container"):
             gr.HTML(title)      
-            chatbot = gr.Chatbot([], elem_id="chatbot", label="DocuBuddy 🤵🏻‍♂️")
+            with gr.Row():
+                question = gr.Textbox(label="Question", placeholder="Type your question and hit Enter ")
+            chatbot = gr.Chatbot([], elem_id="chatbot", label="DocuBuddy 🤵🏻‍♂️", height=660)
             #with gr.Row():
             #    clear = gr.Button("Clear")
             chatbot.like(vote, None, None)
 
-            with gr.Row():
-                question = gr.Textbox(label="Question", placeholder="Type your question and hit Enter ")
             with gr.Row():
                 clear = gr.ClearButton([chatbot, question])
 
